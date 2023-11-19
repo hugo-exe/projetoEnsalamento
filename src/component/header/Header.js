@@ -1,0 +1,35 @@
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { Link } from 'react-router-dom';
+
+function Header() {
+  return (
+    <>
+      <Navbar bg="dark" data-bs-theme="dark">
+        <Container>
+          <Navbar.Brand href="#home">Ensalamento</Navbar.Brand>
+          <Nav className="me-auto">
+            <Link to='/'>
+            <Nav.Link href="#Inicial">Inicial</Nav.Link>
+            </Link>
+            <Link to='/CadastroCurso'>
+            <Nav.Link href="#CadastroCurso">Cadastro de Curso</Nav.Link>
+            </Link>
+            <Link to='/CadastroDesafio'>
+            <Nav.Link href="#CadastroDesafio">Cadastro de Desafio</Nav.Link>
+            </Link>
+            <Link to='/CadastroPeriodo'>
+            <Nav.Link href="#CadastroPeriodo">Cadastro de Período</Nav.Link>
+            </Link>
+            <Nav.Link href="#CadastroProfessores">Cadastro de Professores</Nav.Link>
+            <Nav.Link href="#CadastroSalas">Cadastro de Salas</Nav.Link>
+            <Nav.Link href="#CadastroHorario">Cadastro de Horário</Nav.Link>
+          </Nav>
+        </Container>
+      </Navbar>
+    </>
+  );
+}
+
+export default Header;

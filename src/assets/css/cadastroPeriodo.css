@@ -1,0 +1,16 @@
+h1 {
+    text-align: center;
+}
+
+#botaoExcluir {
+    margin-left: 10px;
+}
+
+#listaForm {
+    margin-top: 10px;
+}
+
+.botoesListaForm {
+    padding-top: 2px;
+    padding-bottom: 20px;
+}
