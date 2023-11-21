@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../component/header/Header";
 
 
-function CadastroSala() {
+function CadastroProfessores() {
     return (
         <div>
             <Header />
@@ -10,4 +10,4 @@ function CadastroSala() {
     );
 }
 
-export default CadastroSala;
+export default CadastroProfessores;

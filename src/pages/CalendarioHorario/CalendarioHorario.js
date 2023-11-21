@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../component/header/Header";
 
 
-function cadastroDesafio() {
+function calendarioHorario() {
     return (
         <div>
             <Header />
@@ -10,4 +10,4 @@ function cadastroDesafio() {
     );
 }
 
-export default cadastroDesafio;
+export default calendarioHorario;

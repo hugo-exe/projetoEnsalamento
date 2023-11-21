@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 function CadastroCurso() {
     const [curso, setCurso] = useState({
         nome: '',
+        nomeCoordenador: '',
         descricao: '',
         duracao: ''
     });
@@ -35,6 +36,7 @@ function CadastroCurso() {
         setCursosCadastrados(novosCursos);
         setCurso({
             nome: '',
+            nomeCoordenador: '',
             descricao: '',
             duracao: ''
         });
@@ -66,6 +68,17 @@ function CadastroCurso() {
                             placeholder="Digite o nome do curso" 
                             name="nome"
                             value={curso.nome}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="formCoordenador">
+                        <Form.Label>Nome do Coordenador</Form.Label>
+                        <Form.Control 
+                            type="text" 
+                            placeholder="Digite o nome do coordernador" 
+                            name="nomeCoordenador"
+                            value={curso.nomeCoordenador}
                             onChange={handleChange}
                         />
                     </Form.Group>
