@@ -9,19 +9,6 @@ import '../../assets/css/cadastroPeriodo.css'
 
 function CadastroPeriodo() {
 
-
-    
-    useEffect(() => {
-        const storedCursos = localStorage.getItem('cursosData');
-        if (storedCursos) {
-            setCursosCadastrados(JSON.parse(storedCursos));
-        }
-
-        const storedPeriodos = localStorage.getItem('periodosData');
-        if (storedPeriodos) {
-            setPeriodosSalvos(JSON.parse(storedPeriodos));
-        }
-    }, []);
     
     const [periodo, setPeriodo] = useState({
         numeroPeriodo: '',
@@ -42,6 +29,17 @@ function CadastroPeriodo() {
     const [periodosSalvos, setPeriodosSalvos] = useState([]);
 
 
+    useEffect(() => {
+        const storedCursos = localStorage.getItem('cursosData');
+        if (storedCursos) {
+            setCursosCadastrados(JSON.parse(storedCursos));
+        }
+
+        const storedPeriodos = localStorage.getItem('periodosData');
+        if (storedPeriodos) {
+            setPeriodosSalvos(JSON.parse(storedPeriodos));
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,25 +60,35 @@ function CadastroPeriodo() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const botaoIncluir = (e) => {
         e.preventDefault();
         const periodoExists = periodosSalvos.some(item => item.id === periodo.id);
-
+    
+        const periodoData = {
+            numeroPeriodo: periodo.numeroPeriodo,
+            semestreAno: periodo.semestreAno,
+            dataInicio: periodo.dataInicio,
+            dataFim: periodo.dataFim,
+            turno: { ...periodo.turno },
+            cursoRelacionado: periodo.cursoRelacionado,
+            nomeCoordenador: periodo.nomeCoordenador, // Certifique-se de ter o valor correto para nomeCoordenador
+        };
+    
         if (periodoExists) {
             const updatedPeriodos = periodosSalvos.map(item => {
                 if (item.id === periodo.id) {
-                    return { ...periodo };
+                    return { ...periodoData, id: item.id };
                 }
                 return item;
             });
             localStorage.setItem('periodosData', JSON.stringify(updatedPeriodos));
             setPeriodosSalvos(updatedPeriodos);
         } else {
-            const newPeriodos = [...periodosSalvos, { ...periodo, id: Date.now() }];
+            const newPeriodos = [...periodosSalvos, { ...periodoData, id: Date.now() }];
             localStorage.setItem('periodosData', JSON.stringify(newPeriodos));
             setPeriodosSalvos(newPeriodos);
         }
-
+    
         setPeriodo({
             numeroPeriodo: '',
             semestreAno: '',
@@ -116,7 +124,7 @@ function CadastroPeriodo() {
             </div>
             <div className="containerForma">
                 <h1>Cadastro de Período</h1>
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={botaoIncluir}>
                     <Form.Group className="mb-3" controlId="formNumeroPeriodo">
                         <Form.Label>Número do Período</Form.Label>
                         <Form.Control
@@ -216,8 +224,17 @@ function CadastroPeriodo() {
                 <ul className="crudForm">
                     {periodosSalvos.map((periodoItem, index) => (
                         <li className="listaForm" key={index}>
-                             <p>Nome do Curso: {cursosCadastrados[periodoItem.cursoRelacionado].nome}</p>
-                             <p>Nome do Coordenador: {cursosCadastrados[periodoItem.cursoRelacionado].nomeCoordenador}</p>
+                            {periodoItem.cursoRelacionado !== '' && periodoItem.cursoRelacionado < cursosCadastrados.length ? (
+                                <>
+                                    <p>Nome do Curso: {cursosCadastrados[periodoItem.cursoRelacionado].nome}</p>
+                                    <p>Nome do Coordenador: {cursosCadastrados[periodoItem.cursoRelacionado].nomeCoordenador}</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Curso não encontrado</p>
+                                    <p>Coordenador não encontrado</p>
+                                </>
+                            )}
                             <p>Número do Período: {periodoItem.numeroPeriodo}</p>
                             <p>Semestre/Ano: {periodoItem.semestreAno}</p>
                             <p>Data ínicio: {periodoItem.dataInicio}</p>

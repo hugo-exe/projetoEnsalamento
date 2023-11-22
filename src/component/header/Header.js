@@ -22,13 +22,13 @@ function Header() {
             <Link to='/CadastroPeriodo'>
             <Nav.Link href="#CadastroPeriodo">Cadastro de Período</Nav.Link>
             </Link>
-            <Link>
+            <Link to='/CadastroProfessores'>
             <Nav.Link href="#CadastroProfessores">Cadastro de Professores</Nav.Link>
             </Link>
-            <Link>
+            <Link to='/CadastroSala'>
             <Nav.Link href="#CadastroSalas">Cadastro de Salas</Nav.Link>
             </Link>
-            <Link>
+            <Link to='/CalendarioHorario'>
             <Nav.Link href="#CadastroHorario">Cadastro de Horário</Nav.Link>
             </Link>
           </Nav>
