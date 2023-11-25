@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../component/header/Header";
-import '../../assets/css/cadastroCurso.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
 function CadastroDesafio() {
     const [desafio, setDesafio] = useState({
-        nome: '',
-        periodos: [],
+        nomeDesafio: '',
+        periodo: '',
         professor: '',
         dataInicio: '',
         dataFim: '',
@@ -17,31 +16,22 @@ function CadastroDesafio() {
     });
 
     const [desafiosCadastrados, setDesafiosCadastrados] = useState([]);
+    const [periodos, setPeriodos] = useState([]);
     const [professores, setProfessores] = useState([]);
     const [salas, setSalas] = useState([]);
-    const [periodos, setPeriodos] = useState([]);
+    const [editIndex, setEditIndex] = useState(null);
 
     useEffect(() => {
-        const storedDesafios = localStorage.getItem('desafiosData');
-        if (storedDesafios) {
-            setDesafiosCadastrados(JSON.parse(storedDesafios));
-        }
+        const storedDesafios = JSON.parse(localStorage.getItem('desafiosData')) || [];
+        setDesafiosCadastrados(storedDesafios);
 
-        // Simulação de dados de professores, salas e períodos vindo de alguma fonte de dados
-        const storedProfessores = localStorage.getItem('professoresData');
-        if (storedProfessores) {
-            setProfessores(JSON.parse(storedProfessores));
-        }
+        const storedPeriodos = JSON.parse(localStorage.getItem('periodosData')) || [];
+        const storedProfessores = JSON.parse(localStorage.getItem('professoresData')) || [];
+        const storedSalas = JSON.parse(localStorage.getItem('salasData')) || [];
 
-        const storedSalas = localStorage.getItem('salasData');
-        if (storedSalas) {
-            setSalas(JSON.parse(storedSalas));
-        }
-
-        const storedPeriodos = localStorage.getItem('periodosData');
-        if (storedPeriodos) {
-            setPeriodos(JSON.parse(storedPeriodos));
-        }
+        setPeriodos(storedPeriodos);
+        setProfessores(storedProfessores);
+        setSalas(storedSalas);
     }, []);
 
     const handleChange = (e) => {
@@ -51,15 +41,25 @@ function CadastroDesafio() {
             [name]: value
         }));
     };
-
+  
     const handleSubmit = (e) => {
         e.preventDefault();
-        const novosDesafios = [...desafiosCadastrados, desafio];
-        localStorage.setItem('desafiosData', JSON.stringify(novosDesafios));
-        setDesafiosCadastrados(novosDesafios);
+
+        if (editIndex !== null) {
+            const updatedDesafios = [...desafiosCadastrados];
+            updatedDesafios[editIndex] = desafio;
+            localStorage.setItem('desafiosData', JSON.stringify(updatedDesafios));
+            setDesafiosCadastrados(updatedDesafios);
+            setEditIndex(null);
+        } else {
+            const novosDesafios = [...desafiosCadastrados, desafio];
+            localStorage.setItem('desafiosData', JSON.stringify(novosDesafios));
+            setDesafiosCadastrados(novosDesafios);
+        }
+
         setDesafio({
-            nome: '',
-            periodos: [],
+            nomeDesafio: '',
+            periodo: '',
             professor: '',
             dataInicio: '',
             dataFim: '',
@@ -69,41 +69,151 @@ function CadastroDesafio() {
         });
     };
 
+    const handleEdit = (index) => {
+        const desafioSelecionado = desafiosCadastrados[index];
+        setDesafio(desafioSelecionado);
+        setEditIndex(index);
+    };
+
+    const handleDelete = (index) => {
+        const updatedDesafios = desafiosCadastrados.filter((_, i) => i !== index);
+        localStorage.setItem('desafiosData', JSON.stringify(updatedDesafios));
+        setDesafiosCadastrados(updatedDesafios);
+        setEditIndex(null);
+    };
+
     return (
         <>
-            <div className="navBar">
-                <Header />
-            </div>
+            <Header />
             <div className="containerForma">
                 <h1>Cadastro de Desafio</h1>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3" controlId="formNomeDesafio">
+                    <Form.Group controlId="formNomeDesafio">
                         <Form.Label>Nome do Desafio</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            placeholder="Digite o nome do desafio" 
-                            name="nome"
-                            value={desafio.nome}
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o nome do desafio"
+                            name="nomeDesafio"
+                            value={desafio.nomeDesafio}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
-                    {/* Aqui você pode adicionar seletores para os outros campos como períodos, professor, datas, sala, etc. */}
+                    <Form.Group controlId="formPeriodo">
+                        <Form.Label>Período</Form.Label>
+                        <Form.Control
+                            as="select"
+                            name="periodo"
+                            value={desafio.periodo}
+                            onChange={handleChange}
+                        >
+                            <option value="">Selecione o período</option>
+                            {periodos.map((periodo, index) => (
+                                <option key={index} value={periodo.id}>
+                                    {/* Exiba as informações do período no dropdown */}
+                                    {periodo.numeroPeriodo} - {periodo.semestreAno}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="formProfessor">
+                        <Form.Label>Professor</Form.Label>
+                        <Form.Control
+                            as="select"
+                            name="professor"
+                            value={desafio.professor}
+                            onChange={handleChange}
+                        >
+                            <option value="">Selecione o professor</option>
+                            {professores.map((professor, index) => (
+                                <option key={index} value={professor.id}>
+                                    {/* Exiba as informações do professor no dropdown */}
+                                    {professor.nome}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="formDataInicio">
+                        <Form.Label>Data de Início</Form.Label>
+                        <Form.Control
+                            type="date"
+                            name="dataInicio"
+                            value={desafio.dataInicio}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formDataFim">
+                        <Form.Label>Data de Fim</Form.Label>
+                        <Form.Control
+                            type="date"
+                            name="dataFim"
+                            value={desafio.dataFim}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formDiaSemana">
+                        <Form.Label>Dia da Semana</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o dia da semana"
+                            name="diaSemana"
+                            value={desafio.diaSemana}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formHorario">
+                        <Form.Label>Horário</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o horário"
+                            name="horario"
+                            value={desafio.horario}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formSala">
+                        <Form.Label>Sala</Form.Label>
+                        <Form.Control
+                            as="select"
+                            name="sala"
+                            value={desafio.sala}
+                            onChange={handleChange}
+                        >
+                            <option value="">Selecione a sala</option>
+                            {salas.map((sala, index) => (
+                                <option key={index} value={sala.id}>
+                                    {/* Exiba as informações da sala no dropdown */}
+                                    {sala.predio} - {sala.numero}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+
+                    <h1>Lista de Desafios Cadastrados</h1>
 
                     <Button variant="primary" type="submit">
-                        Salvar
+                        {editIndex !== null ? 'Atualizar' : 'Salvar'}
                     </Button>
                 </Form>
 
-                <h1>Lista de Desafios</h1>
+                {/* Lista de desafios cadastrados */}
                 <ul>
                     {desafiosCadastrados.map((desafioItem, index) => (
-                        <li className="botoesListaForm" key={index}>
-                            <p>{desafioItem.nome}</p>
-                            <Button variant="info">
+                        <li key={index}>
+                            {desafioItem.nomeDesafio}
+                            <Button variant="info" onClick={() => handleSubmit(index)}>
+                                Salvar
+                            </Button>
+                            <Button variant="info" onClick={() => handleEdit(index)}>
                                 Editar
                             </Button>
-                            <Button id="botaoexcluir" variant="danger">
+                            <Button variant="danger" onClick={() => handleDelete(index)}>
                                 Excluir
                             </Button>
                         </li>
