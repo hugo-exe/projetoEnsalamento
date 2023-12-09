@@ -15,18 +15,21 @@ function CadastroDesafio() {
         sala: ''
     });
 
+
     const [desafiosCadastrados, setDesafiosCadastrados] = useState([]);
     const [periodos, setPeriodos] = useState([]);
-    const [professores, setProfessores] = useState([]);
+       const [professores, setProfessores] = useState([]);
     const [salas, setSalas] = useState([]);
     const [editIndex, setEditIndex] = useState(null);
 
     useEffect(() => {
+        const storedProfessores = JSON.parse(localStorage.getItem('professoresData')) || [];
+  
+
         const storedDesafios = JSON.parse(localStorage.getItem('desafiosData')) || [];
         setDesafiosCadastrados(storedDesafios);
 
         const storedPeriodos = JSON.parse(localStorage.getItem('periodosData')) || [];
-        const storedProfessores = JSON.parse(localStorage.getItem('professoresData')) || [];
         const storedSalas = JSON.parse(localStorage.getItem('salasData')) || [];
 
         setPeriodos(storedPeriodos);
@@ -41,7 +44,7 @@ function CadastroDesafio() {
             [name]: value
         }));
     };
-  
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -55,6 +58,9 @@ function CadastroDesafio() {
             const novosDesafios = [...desafiosCadastrados, desafio];
             localStorage.setItem('desafiosData', JSON.stringify(novosDesafios));
             setDesafiosCadastrados(novosDesafios);
+            localStorage.setItem('desafiosData', JSON.stringify(novosDesafios));
+            setDesafiosCadastrados(novosDesafios);
+        
         }
 
         setDesafio({
@@ -64,6 +70,7 @@ function CadastroDesafio() {
             dataInicio: '',
             dataFim: '',
             diaSemana: '',
+            dataAula: '',
             horario: '',
             sala: ''
         });
@@ -81,6 +88,27 @@ function CadastroDesafio() {
         setDesafiosCadastrados(updatedDesafios);
         setEditIndex(null);
     };
+
+
+
+    const getPeriodoInfo = (periodoId) => {
+        const periodo = periodos.find((p) => p.id === parseInt(periodoId));
+        return periodo ? `${periodo.numeroPeriodo} - ${periodo.semestreAno}` : 'Não encontrado';
+    };
+
+
+
+
+    const getSalaInfo = (salaId) => {
+        const sala = salas.find((s) => s.id === parseInt(salaId));
+        return sala ? `${sala.predio} - ${sala.numero}` : 'Não encontrada';
+    };
+
+    const getProfessorNome = (professorId) => {
+        const professor = professores.find((p) => p.id === parseInt(professorId));
+        return professor ? professor.nome : 'Não encontrado';
+    };
+
 
     return (
         <>
@@ -110,7 +138,6 @@ function CadastroDesafio() {
                             <option value="">Selecione o período</option>
                             {periodos.map((periodo, index) => (
                                 <option key={index} value={periodo.id}>
-                                    {/* Exiba as informações do período no dropdown */}
                                     {periodo.numeroPeriodo} - {periodo.semestreAno}
                                 </option>
                             ))}
@@ -118,22 +145,21 @@ function CadastroDesafio() {
                     </Form.Group>
 
                     <Form.Group controlId="formProfessor">
-                        <Form.Label>Professor</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="professor"
-                            value={desafio.professor}
-                            onChange={handleChange}
-                        >
-                            <option value="">Selecione o professor</option>
-                            {professores.map((professor, index) => (
-                                <option key={index} value={professor.id}>
-                                    {/* Exiba as informações do professor no dropdown */}
-                                    {professor.nome}
-                                </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
+                    <Form.Label>Professor</Form.Label>
+                    <Form.Control
+                        as="select"
+                        name="professor"
+                        value={desafio.professor}
+                        onChange={handleChange}
+                    >
+                        <option value="">Selecione o professor</option>
+                        {professores.map((professor) => (
+                            <option key={professor.id} value={professor.id}>
+                                {professor.nome}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
 
                     <Form.Group controlId="formDataInicio">
                         <Form.Label>Data de Início</Form.Label>
@@ -195,30 +221,45 @@ function CadastroDesafio() {
                         </Form.Control>
                     </Form.Group>
 
+                    <Form.Group controlId="formDataAula">
+            <Form.Label>Data da Aula</Form.Label>
+            <Form.Control
+              type="date"
+              name="dataAula"
+              value={desafio.dataAula}
+              onChange={handleChange}
+            />
+          </Form.Group>
+
                     <h1>Lista de Desafios Cadastrados</h1>
+
+
+                    <ul>
+                        {desafiosCadastrados.map((desafioItem, index) => (
+                            <li key={index}>
+                                <p>Nome do Desafio: {desafioItem.nomeDesafio}</p>
+                                <p>Período: {getPeriodoInfo(desafioItem.periodo)}</p>
+                                <p>Professor: {getProfessorNome(desafioItem.professor)}</p>
+                                <p>Data de Início: {desafioItem.dataInicio}</p>
+                                <p>Data de Fim: {desafioItem.dataFim}</p>
+                                <p>Dia da Semana: {desafioItem.diaSemana}</p>
+                                <p>Data da Aula: {desafioItem.dataAula}</p>
+                                <p>Horário: {desafioItem.horario}</p>
+                                <p>Sala: {getSalaInfo(desafioItem.sala)}</p>
+                                <Button variant="info" onClick={() => handleEdit(index)}>
+                                    Editar
+                                </Button>
+                                <Button variant="danger" onClick={() => handleDelete(index)}>
+                                    Excluir
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
 
                     <Button variant="primary" type="submit">
                         {editIndex !== null ? 'Atualizar' : 'Salvar'}
                     </Button>
                 </Form>
-
-                {/* Lista de desafios cadastrados */}
-                <ul>
-                    {desafiosCadastrados.map((desafioItem, index) => (
-                        <li key={index}>
-                            {desafioItem.nomeDesafio}
-                            <Button variant="info" onClick={() => handleSubmit(index)}>
-                                Salvar
-                            </Button>
-                            <Button variant="info" onClick={() => handleEdit(index)}>
-                                Editar
-                            </Button>
-                            <Button variant="danger" onClick={() => handleDelete(index)}>
-                                Excluir
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
             </div>
         </>
     );

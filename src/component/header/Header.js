@@ -10,9 +10,6 @@ function Header() {
         <Container>
           <Navbar.Brand href="#home">Ensalamento</Navbar.Brand>
           <Nav className="me-auto">
-            <Link to='/'>
-            <Nav.Link href="#Inicial">Inicial</Nav.Link>
-            </Link>
             <Link to='/CadastroCurso'>
             <Nav.Link href="#CadastroCurso">Cadastro de Curso</Nav.Link>
             </Link>
@@ -28,7 +25,7 @@ function Header() {
             <Link to='/CadastroSala'>
             <Nav.Link href="#CadastroSalas">Cadastro de Salas</Nav.Link>
             </Link>
-            <Link to='/CalendarioHorario'>
+            <Link to='/'>
             <Nav.Link href="#CadastroHorario">Cadastro de Horário</Nav.Link>
             </Link>
           </Nav>

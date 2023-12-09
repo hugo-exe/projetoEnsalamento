@@ -1,86 +1,140 @@
-import React, { useState, useEffect } from "react";
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import React, { useState, useEffect } from 'react';
+import Table from 'react-bootstrap/Table';
+import Header from '../../component/header/Header';
 
-function ConsultaDesafio() {
+const Calendario = () => {
+  const [salas, setSalas] = useState([]);
+  const [dadosDoDia, setDadosDoDia] = useState([]);
   const [desafiosCadastrados, setDesafiosCadastrados] = useState([]);
-  const [selectedDesafio, setSelectedDesafio] = useState('');
-  const [professor, setProfessor] = useState('');
-  const [sala, setSala] = useState('');
-  const [horario, setHorario] = useState('');
+  const [periodos, setPeriodos] = useState([]);
+  const [professores, setProfessores] = useState([]);
 
   useEffect(() => {
-    // Recupere os dados de desafios cadastrados anteriormente do armazenamento local (localStorage, banco de dados, etc.)
-    const storedDesafios = JSON.parse(localStorage.getItem('desafiosData')) || [];
-    setDesafiosCadastrados(storedDesafios);
+    const salasCadastradas = JSON.parse(localStorage.getItem('salasData')) || [];
+    setSalas(salasCadastradas);
+
+    const desafiosCadastrados = JSON.parse(localStorage.getItem('desafiosData')) || [];
+    setDesafiosCadastrados(desafiosCadastrados);
+
+    const storedPeriodos = JSON.parse(localStorage.getItem('periodosData')) || [];
+    setPeriodos(storedPeriodos);
+
+    const storedProfessores = JSON.parse(localStorage.getItem('professoresData')) || [];
+    setProfessores(storedProfessores);
   }, []);
 
-  const handleDesafioChange = (e) => {
-    const selectedDesafioId = e.target.value;
-    setSelectedDesafio(selectedDesafioId);
+  const handleDayClick = (dia) => {
+    const anoMesAtual = '2023-11'; // Ajuste o ano e mês conforme necessário
+    const dataSelecionada = `${anoMesAtual}-${dia < 10 ? '0' + dia : dia}`; // Garante que o dia seja formatado com dois dígitos
+  
+    const dadosDia = desafiosCadastrados.filter(
+      (desafio) => desafio.dataAula === dataSelecionada
+    );
+    setDadosDoDia(dadosDia);
+  };
 
-    // Encontrar o desafio selecionado na lista de desafios cadastrados
-    const desafioSelecionado = desafiosCadastrados.find(desafio => desafio.id === selectedDesafioId);
+  
+  const getPeriodoInfo = (periodoId) => {
+    const periodo = periodos.find((p) => p.id === parseInt(periodoId));
+    return periodo ? `${periodo.numeroPeriodo} - ${periodo.semestreAno}` : 'Não encontrado';
+  };
 
-    if (desafioSelecionado) {
-      setProfessor(desafioSelecionado.professor);
-      setSala(desafioSelecionado.nome); // Adapte de acordo com a estrutura dos seus dados
-      setHorario(desafioSelecionado.horario);
-    } else {
-      setProfessor('');
-      setSala('');
-      setHorario('');
+  const getProfessorNome = (professorId) => {
+    const professor = professores.find((p) => p.id === parseInt(professorId));
+    return professor ? professor.nome : 'Não encontrado';
+  };
+
+  const getSalaInfo = (salaId) => {
+    const sala = salas.find((s) => s.id === parseInt(salaId));
+    return sala ? `${sala.predio} - ${sala.numero}` : 'Não encontrada';
+};
+
+  const renderCalendario = () => {
+    const diasDaSemana = ['Qua', 'Qui', 'Sex', 'Sáb', 'Dom', 'Seg', 'Ter'];
+    const diasDoMes = [];
+    let contadorDias = 1;
+
+    // Iniciando a contagem a partir da quarta-feira (dia 1)
+    for (let i = 1; i <= 30; i++) {
+      const diaSemana = diasDaSemana[(i + 2) % 7]; // Ajuste do índice para quarta-feira
+
+      diasDoMes.push({ dia: contadorDias, diaSemana });
+      contadorDias++;
     }
+
+    const linhas = [];
+    const quantidadeLinhas = Math.ceil(diasDoMes.length / 7);
+
+    for (let i = 0; i < quantidadeLinhas; i++) {
+      linhas.push(diasDoMes.slice(i * 7, i * 7 + 7));
+    }
+
+    return (
+      <Table responsive bordered>
+        <thead>
+          <tr>
+            <th></th>
+            {diasDaSemana.map((dia) => (
+              <th key={dia}>{dia}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {linhas.map((linha, index) => (
+            <tr key={index}>
+              <td></td>
+              {linha.map(({ dia, diaSemana }) => (
+                <td key={dia} onClick={() => handleDayClick(dia)}>
+                  {dia}
+                  <br />
+                  {diaSemana}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    );
+  };  
+
+  
+
+  const renderDadosDoDia = () => {
+    return (
+      <div>
+        <h2>Dados do dia selecionado:</h2>
+        {dadosDoDia.length > 0 ? (
+          <ul>
+            {dadosDoDia.map((desafio, index) => (
+              <li key={index}>
+                <p>Nome do Desafio: {desafio.nomeDesafio}</p>
+                <p>Período: {getPeriodoInfo(desafio.periodo)}</p>
+                <p>Professor: {getProfessorNome(desafio.professor)}</p>
+                <p>Data de Início: {desafio.dataInicio}</p>
+                <p>Data de Fim: {desafio.dataFim}</p>
+                <p>Sala: {getSalaInfo(desafio.sala)}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Nenhum desafio cadastrado para este dia.</p>
+        )}
+      </div>
+    );
   };
 
   return (
-    <Container>
-      <h1>Consulta de Desafio</h1>
-      <Form>
-        <Form.Group as={Row} controlId="formDesafio">
-          <Form.Label column sm="2">Selecionar Desafio:</Form.Label>
-          <Col sm="4">
-            <Form.Control as="select" value={selectedDesafio} onChange={handleDesafioChange}>
-              <option value="">Selecione o Desafio</option>
-              {desafiosCadastrados.map((desafio, index) => (
-                <option key={index} value={desafio.id}>
-                  {desafio.nomeDesafio}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-        </Form.Group>
-      </Form>
-
-      <h3>Dados do Desafio Selecionado:</h3>
-      <Row>
-        <Col sm="3">
-          <strong>Professor:</strong>
-        </Col>
-        <Col sm="9">
-          {professor}
-        </Col>
-      </Row>
-      <Row>
-        <Col sm="3">
-          <strong>Sala:</strong>
-        </Col>
-        <Col sm="9">
-          {sala}
-        </Col>
-      </Row>
-      <Row>
-        <Col sm="3">
-          <strong>Horário:</strong>
-        </Col>
-        <Col sm="9">
-          {horario}
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <div className="navBar">
+        <Header />
+      </div>
+      <div>
+        <h1>Calendário com Dados das Salas</h1>
+        {renderCalendario()}
+        {renderDadosDoDia()}
+      </div>
+    </>
   );
-}
+};
 
-export default ConsultaDesafio;
+export default Calendario;
