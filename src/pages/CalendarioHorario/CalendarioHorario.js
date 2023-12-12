@@ -24,8 +24,8 @@ const Calendario = () => {
   }, []);
 
   const handleDayClick = (dia) => {
-    const anoMesAtual = '2023-11'; // Ajuste o ano e mês conforme necessário
-    const dataSelecionada = `${anoMesAtual}-${dia < 10 ? '0' + dia : dia}`; // Garante que o dia seja formatado com dois dígitos
+    const anoMesAtual = '2023-11'; 
+    const dataSelecionada = `${anoMesAtual}-${dia < 10 ? '0' + dia : dia}`; 
   
     const dadosDia = desafiosCadastrados.filter(
       (desafio) => desafio.dataAula === dataSelecionada
@@ -54,9 +54,8 @@ const Calendario = () => {
     const diasDoMes = [];
     let contadorDias = 1;
 
-    // Iniciando a contagem a partir da quarta-feira (dia 1)
     for (let i = 1; i <= 30; i++) {
-      const diaSemana = diasDaSemana[(i + 2) % 7]; // Ajuste do índice para quarta-feira
+      const diaSemana = diasDaSemana[(i + 2) % 7]; 
 
       diasDoMes.push({ dia: contadorDias, diaSemana });
       contadorDias++;

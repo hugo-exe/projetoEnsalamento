@@ -30,15 +30,15 @@ function CadastroProfessor() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const novoProfessor = { ...professor }; // Crie uma cópia do objeto professor
+        const novoProfessor = { ...professor }; 
     
-        // Adicione um ID único ao novo professor (por exemplo, usando a data atual como ID)
+
         novoProfessor.id = Date.now();
     
-        const novosProfessores = [...professoresCadastrados, novoProfessor]; // Adicione o novo professor ao array existente
-        localStorage.setItem('professoresData', JSON.stringify(novosProfessores)); // Atualize os dados no localStorage
-        setProfessoresCadastrados(novosProfessores); // Atualize o estado com os novos dados
-        setProfessor({ // Limpe o estado do formulário após a submissão
+        const novosProfessores = [...professoresCadastrados, novoProfessor]; 
+        localStorage.setItem('professoresData', JSON.stringify(novosProfessores)); 
+        setProfessoresCadastrados(novosProfessores); 
+        setProfessor({ 
             nome: '',
             matricula: '',
             telefone: ''
